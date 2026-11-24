@@ -1,0 +1,35 @@
+# .NET build output
+[Bb]in/
+[Oo]bj/
+[Tt]est[Rr]esults/
+*.trx
+coverage*.xml
+
+# IDE and user-specific files
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.DotSettings.user
+
+# Local configuration and secrets
+.env
+.env.*
+appsettings.*.local.json
+
+# Terraform (the .terraform.lock.hcl files are committed)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.tfplan
+crash.log
+
+# Helm
+deploy/helm/**/charts/*.tgz
+
+# OS files
+.DS_Store
+Thumbs.db

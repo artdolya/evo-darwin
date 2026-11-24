@@ -1,0 +1,7 @@
+# GitHub requests a review from the owners below on every pull request that
+# changes a matching path. The last matching line wins.
+#
+# TODO: the owning team is not known yet. Replace <org>/<team> with the GitHub
+# handle of the team and remove the leading "# " from the line below.
+#
+# *    @<org>/<team>

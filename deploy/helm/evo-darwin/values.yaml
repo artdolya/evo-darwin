@@ -1,0 +1,32 @@
+# Default values for the evo-darwin chart.
+# Terraform overrides replicaCount, image and env for each environment
+# (see deploy/terraform/modules/service/main.tf).
+
+replicaCount: 1
+
+image:
+  # Image repository without a tag, for example <registry>/<path>/evo-darwin.
+  # Required. Terraform passes it from the image_repository variable.
+  repository: ""
+  # Image tag. Required. Terraform passes it from the image_tag variable.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Names of the secrets used to pull the image, for example [{name: registry-credentials}].
+# TODO: set this if the container registry requires a pull secret in the cluster.
+imagePullSecrets: []
+
+# Port the container listens on. The .NET base image sets ASPNETCORE_HTTP_PORTS=8080.
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Environment variables passed to the container, as name: value.
+# Every variable is described in docs/configuration.md.
+env:
+  ASPNETCORE_ENVIRONMENT: Production
+
+# TODO: set CPU and memory requests and limits once the service has been measured under load.
+resources: {}

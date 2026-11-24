@@ -1,0 +1,7 @@
+apiVersion: v2
+name: evo-darwin
+description: Deploys the Evo.Darwin.Api service.
+type: application
+
+# Bump this version in every pull request that changes the chart.
+version: 0.1.0

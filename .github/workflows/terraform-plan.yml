@@ -1,0 +1,79 @@
+name: Terraform plan
+
+on:
+  pull_request:
+    paths:
+      - deploy/terraform/**
+
+permissions:
+  contents: read
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TERRAFORM_VERSION: "1.15.6"
+  # TODO: create the repository variable IMAGE_REPOSITORY with the image
+  # repository without a tag (<registry>/<path>/evo-darwin). The registry is
+  # not chosen yet. cd.yml reads the same variable.
+  IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY }}
+
+jobs:
+  format:
+    name: Format check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform fmt
+        run: terraform fmt -check -recursive deploy/terraform
+
+  plan:
+    name: Plan (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [dev, staging, prod]
+    defaults:
+      run:
+        working-directory: deploy/terraform/environments/${{ matrix.environment }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      # TODO: authenticate to the cloud provider with credentials that can
+      # read the state and the cluster of this environment. Read-only access
+      # is enough for a plan.
+
+      # TODO: give Terraform access to the cluster of this environment
+      # (see providers.tf in the environment folder).
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      # TODO: this reads the state only after the remote backend is configured
+      # in versions.tf of the environment folder.
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform validate
+        run: terraform validate
+
+      # The plan uses the image tag that is deployed now, so that it shows only
+      # the changes made in the pull request. Before the first deployment
+      # there is no tag, and the plan uses the placeholder "not-deployed".
+      - name: Terraform plan
+        run: |
+          image_tag="$(terraform output -raw image_tag 2>/dev/null || true)"
+          terraform plan -input=false \
+            -var "image_repository=$IMAGE_REPOSITORY" \
+            -var "image_tag=${image_tag:-not-deployed}"
