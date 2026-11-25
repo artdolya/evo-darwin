@@ -9,6 +9,9 @@ Documentation of the Evo services in this repository: Darwin, Galaxy and the hom
 | [../README.md](../README.md) | How do I set up the repository, and build, run and test the services locally? |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | How do I contribute, and when and how do I update the docs? |
 | [architecture/overview.md](architecture/overview.md) | Which services and components exist, what may each component reach, how are projects named, and which project may reference which? |
+| [SDLC.md](SDLC.md) | Which phases take a Dreamer's idea to running software, what does each phase produce, which roles work in each phase, and how does a demo work? |
+| [dream-context.md](dream-context.md) | What is DreamContext, which parts and scores does it have, when is a point confirmed, and how does a confirmed point become a test? |
+| [roles/README.md](roles/README.md) | Which roles exist, when is each one engaged, which architect role decides what, and what is a specialization of a role? |
 | [api/README.md](api/README.md) | How is the OpenAPI document generated and where do I get it? |
 | [configuration.md](configuration.md) | Which environment variables and secrets exist, and where does each value come from? |
 | [runbooks/deploy.md](runbooks/deploy.md) | How is a version tagged, released and deployed? |
@@ -19,6 +22,20 @@ Documentation of the Evo services in this repository: Darwin, Galaxy and the hom
 | [adr/0003-services-and-components.md](adr/0003-services-and-components.md) | Why do Darwin and Galaxy each have a UI, an API, a Worker and Migrations, and why can the API not reach the database? |
 | [adr/0004-krapka-as-source.md](adr/0004-krapka-as-source.md) | Why are the Krapka libraries built from a linked checkout and not taken from NuGet? |
 | [adr/template.md](adr/template.md) | Template for an architecture decision record. |
+
+Every role of the SDLC has its own document. It says what the role does and decides, how deep it works at each tier, and what it does in each phase.
+
+| Group | Role documents |
+| --- | --- |
+| Decision | [Dreamer](roles/dreamer.md) |
+| Contact | [Darwin](roles/darwin.md) |
+| Product | [Product manager](roles/product-manager.md), [Business analyst](roles/business-analyst.md), [UX designer](roles/ux-designer.md) |
+| Delivery | [Project manager](roles/project-manager.md) |
+| Architecture | [Solution architect](roles/solution-architect.md), [Software architect](roles/software-architect.md), [Data architect](roles/data-architect.md), [Infrastructure architect](roles/infrastructure-architect.md), [Security architect](roles/security-architect.md), [AI architect](roles/ai-architect.md) |
+| Engineering | [Tech lead](roles/tech-lead.md), [Developer](roles/developer.md) |
+| Quality | [QA engineer](roles/qa-engineer.md) |
+| Operations | [DevOps engineer](roles/devops-engineer.md), [Site reliability engineer](roles/site-reliability-engineer.md) |
+| Documentation | [Technical writer](roles/technical-writer.md) |
 
 Every project has its own README. It says what the project is for, how to run it or its tests, and which environment variables it needs. Darwin and Galaxy have the same projects.
 

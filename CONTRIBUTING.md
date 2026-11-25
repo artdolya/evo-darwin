@@ -254,6 +254,7 @@ Before you open a pull request, find the docs your change affects in the table b
 | The steps to set up, build, run or test | [README.md](README.md), and "Run locally" or "Run the tests" in the README of the project |
 | A target in the `Makefile`: you add, rename or remove one | [Checks](#checks) in this file, and [README.md](README.md) |
 | How to contribute: the workflow, the checks, or a rule in this file | This file |
+| The phase diagram in [docs/SDLC.md](docs/SDLC.md#phases): a phase, an arrow or a label | `docs/assets/sdlc-phases.py`, and render `docs/assets/sdlc-phases.gif` again. See [Animations](#animations). |
 | Any document: you add, rename or remove one | The index in [docs/README.md](docs/README.md) |
 
 The table cannot list every case. Search the docs for each name you change or remove. For example, after a change to `ASPNETCORE_ENVIRONMENT`:
@@ -270,6 +271,10 @@ grep -rn "ASPNETCORE_ENVIRONMENT" --include="*.md" .
 | `CONTRIBUTING.md` | How to contribute, and the rules for docs. |
 | `README.md` in each project folder | What the project is for, how to run it or its tests, and the environment variables it needs. |
 | `docs/README.md` | The index of all documents. |
+| `docs/SDLC.md` | The process that takes a Dreamer's idea to running software: the phases, their outputs, and the roles in each phase. It describes the projects that Evo builds, not the workflow of this repository. |
+| `docs/dream-context.md` | DreamContext, the internal document that holds what Evo knows about one Dream: its parts, the status of each point, its scores and its life. |
+| `docs/roles/` | The roles of that process, one file per role. `docs/roles/README.md` lists the headings of a role document. |
+| `docs/assets/` | Animations that accompany a diagram, each with the script that renders it. See [Animations](#animations). |
 | `docs/architecture/` | The structure of the services and their surroundings: components, dependencies, data stores, projects and their allowed references. |
 | `docs/adr/` | Decisions and their reasons, one file per decision. |
 | `docs/api/` | How to use the HTTP API, and where to get the OpenAPI document. |
@@ -282,10 +287,46 @@ Add a new document only if someone will keep it current. A document that nobody 
 
 - Write in Markdown as GitHub renders it.
 - Name files in kebab-case with the `.md` extension, for example `message-retries.md`.
-- `README.md` and `CONTRIBUTING.md` are the only upper-case names. A `README.md` is the entry page of its folder.
+- `README.md`, `CONTRIBUTING.md` and `SDLC.md` are the only upper-case names. A `README.md` is the entry page of its folder.
 - Name an ADR `NNNN-short-title.md`. `NNNN` is the next free four-digit number. Numbers are never reused.
-- Write diagrams as [Mermaid](https://mermaid.js.org/) text in a fenced `mermaid` code block. GitHub renders it, and a change to a diagram can be reviewed in the diff. Do not commit diagrams as image files.
+- Write diagrams as [Mermaid](https://mermaid.js.org/) text in a fenced `mermaid` code block. GitHub renders it, and a change to a diagram can be reviewed in the diff. Do not commit an image file in place of a Mermaid diagram.
+- An animation may accompany a Mermaid diagram. The diagram stays in the document and is the source. The conditions are in [Animations](#animations).
 - Link to other files of the repository with relative links.
+
+### Animations
+
+An animation is an image file that shows a Mermaid diagram in motion. It is allowed under these conditions:
+
+- The Mermaid diagram stays in the document, next to the animation. The diagram is the source. When the two differ, the diagram is right.
+- The animation is in `docs/assets/`, together with the script that renders it. Nobody edits the image by hand.
+- The image has alternative text that says what the animation shows.
+- A change to the diagram changes the script and the animation in the same pull request.
+
+The repository has one animation: `docs/assets/sdlc-phases.gif`, the phase diagram of [docs/SDLC.md](docs/SDLC.md#phases). `docs/assets/sdlc-phases.py` renders it. The script does not read the Mermaid text. It holds its own copy of the phases, the arrows and the labels.
+
+The script needs Python 3 with the Pillow package. Create a Python environment outside the repository and install Pillow in it:
+
+```bash
+python3 -m venv /tmp/evo-docs
+```
+
+```bash
+/tmp/evo-docs/bin/pip install pillow
+```
+
+Render the animation:
+
+```bash
+/tmp/evo-docs/bin/python docs/assets/sdlc-phases.py docs/assets/sdlc-phases.gif
+```
+
+The command takes about ten seconds. It prints the number of frames and the length of the loop. To look at one frame before you render all of them, for example the frame at 2.5 seconds:
+
+```bash
+/tmp/evo-docs/bin/python docs/assets/sdlc-phases.py /tmp/frame.png --still 2.5
+```
+
+The image in the repository is rendered with the Ubuntu font. The script uses DejaVu Sans when the Ubuntu font is not installed, and the image then looks different. The font paths in the script are those of Ubuntu Linux. On another system, add a font to `FONTS` in the script.
 
 ### Project READMEs
 
