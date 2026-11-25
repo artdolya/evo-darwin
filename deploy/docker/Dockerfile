@@ -11,7 +11,7 @@ WORKDIR /source
 COPY global.json Directory.Build.props Directory.Packages.props ./
 COPY src/ src/
 
-RUN dotnet publish src/Evo.Darwin.Api/Evo.Darwin.Api.csproj \
+RUN dotnet publish src/Darwin/Evo.Darwin.Api/Evo.Darwin.Api.csproj \
       --configuration Release \
       --output /app/publish \
       -p:UseAppHost=false

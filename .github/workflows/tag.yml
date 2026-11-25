@@ -1,0 +1,77 @@
+name: Tag
+
+# Gives every build a version tag. The rules are in docs/runbooks/deploy.md.
+# - A push to a pull request creates the next tag of that pull request, for
+#   example 0.0.1-PR2-003.
+# - A push to master creates the next master tag, for example 0.0.2.
+#
+# A tag that a workflow creates does not start another workflow. A release is
+# started by hand: see release.yml.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  pull-request:
+    name: Tag the pull request
+    # A pull request from a fork gets no tag: its token cannot write to this
+    # repository.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    # One run for each pull request at a time, so that two pushes do not get
+    # the same sequence number.
+    concurrency:
+      group: tag-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      # The tag points at the last commit of the pull request branch, not at
+      # the merge commit that CI builds.
+      - name: Check out
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Create the tag
+        run: |
+          tag="$(git ls-remote --tags origin | bash scripts/tags.sh next-pr "$PR_NUMBER" "$HEAD_SHA")"
+          if [ -z "$tag" ]; then
+            echo "Commit $HEAD_SHA already has a tag of pull request $PR_NUMBER. No tag was created." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git push origin "$HEAD_SHA:refs/tags/$tag"
+          echo "Created tag \`$tag\`. To deploy it to test, run the Release workflow with this tag." >> "$GITHUB_STEP_SUMMARY"
+
+  master:
+    name: Tag master
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # One run at a time, so that two pushes do not get the same version.
+    concurrency:
+      group: tag-master
+      cancel-in-progress: false
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Create the tag
+        run: |
+          tag="$(git ls-remote --tags origin | bash scripts/tags.sh next-master "$GITHUB_SHA")"
+          if [ -z "$tag" ]; then
+            echo "Commit $GITHUB_SHA already has a master tag. No tag was created." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git push origin "$GITHUB_SHA:refs/tags/$tag"
+          echo "Created tag \`$tag\`. To deploy it to prod, run the Release workflow with this tag." >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evo.Darwin.Domain\Evo.Darwin.Domain.csproj" />
+    <ProjectReference Include="..\Evo.Darwin.Infrastructure\Evo.Darwin.Infrastructure.csproj" />
+    <ProjectReference Include="..\Evo.Darwin.Models\Evo.Darwin.Models.csproj" />
+  </ItemGroup>
+
+</Project>

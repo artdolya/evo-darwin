@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
 
 permissions:
   contents: read
@@ -21,6 +21,14 @@ jobs:
       - name: Check out
         uses: actions/checkout@v7
 
+      # The link src/Krapka points to a Krapka checkout next to this
+      # repository. The Krapka projects are built from that source. See
+      # docs/adr/0004-krapka-as-source.md.
+      # TODO: this builds the newest commit of Krapka, which can change
+      # between two runs. Pin a commit if the build must be repeatable.
+      - name: Check out Krapka
+        run: git clone --depth 1 https://github.com/artdolya/krapka.git ../krapka
+
       - name: Set up .NET
         uses: actions/setup-dotnet@v6
         with:
@@ -28,6 +36,11 @@ jobs:
 
       - name: Restore
         run: dotnet restore
+
+      # Fails when `dotnet format` would change a file. The rules are in .editorconfig.
+      # The Krapka sources belong to another repository and are not checked.
+      - name: Check formatting
+        run: dotnet format --verify-no-changes --no-restore --exclude src/Krapka
 
       - name: Build
         run: dotnet build --no-restore --configuration Release

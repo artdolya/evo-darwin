@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evo.Darwin.Data\Evo.Darwin.Data.csproj" />
+    <ProjectReference Include="..\Evo.Darwin.Domain\Evo.Darwin.Domain.csproj" />
+    <ProjectReference Include="..\Evo.Darwin.Entities\Evo.Darwin.Entities.csproj" />
+    <ProjectReference Include="..\Evo.Darwin.Models\Evo.Darwin.Models.csproj" />
+  </ItemGroup>
+
+</Project>

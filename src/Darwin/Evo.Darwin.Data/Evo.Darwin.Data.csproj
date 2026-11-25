@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evo.Darwin.Entities\Evo.Darwin.Entities.csproj" />
+    <ProjectReference Include="$(KrapkaNetRoot)EntityFramework\KrapkaNet.EntityFramework.Abstractions\KrapkaNet.EntityFramework.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,167 @@
+name: Release
+
+# Builds the container image of one version tag and deploys it. Start it by
+# hand and give it the tag. The procedure is in docs/runbooks/deploy.md.
+# - A pull request tag, for example 0.0.1-PR2-003, is deployed to test.
+# - A master tag, for example 0.0.1, is deployed to prod.
+#
+# TODO: in the repository settings create the GitHub environments "test" and
+# "prod". Add required reviewers to "prod" if a release to prod needs an
+# approval. Without reviewers the deploy job starts as soon as the image is
+# built.
+
+run-name: Release ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version tag to release, for example 0.0.1 or 0.0.1-PR2-003
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TERRAFORM_VERSION: "1.15.6"
+  # TODO: create the repository variable IMAGE_REPOSITORY with the image
+  # repository without a tag (<registry>/<path>/evo-darwin). The registry is
+  # not chosen yet. terraform-plan.yml and cleanup.yml read the same variable.
+  IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY }}
+  # The image is tagged with the version tag it was built from.
+  IMAGE_TAG: ${{ inputs.tag }}
+
+jobs:
+  check:
+    name: Check the tag
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.target.outputs.environment }}
+      terraform_environment: ${{ steps.target.outputs.terraform_environment }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+        with:
+          # All branches and tags, to check that the tag exists and where it is.
+          fetch-depth: 0
+
+      - name: Choose the environment
+        id: target
+        run: |
+          if ! kind="$(bash scripts/tags.sh kind "$IMAGE_TAG")"; then
+            echo "::error::'$IMAGE_TAG' is not a version tag. Expected a tag like 0.0.1 or 0.0.1-PR2-003."
+            exit 1
+          fi
+          if ! git rev-parse --verify --quiet "refs/tags/$IMAGE_TAG^{commit}" > /dev/null; then
+            echo "::error::The tag $IMAGE_TAG does not exist in this repository."
+            exit 1
+          fi
+          if [ "$kind" = "master" ]; then
+            if ! git merge-base --is-ancestor "refs/tags/$IMAGE_TAG" origin/master; then
+              echo "::error::The tag $IMAGE_TAG is not on master. Only a commit of master is released to prod."
+              exit 1
+            fi
+            environment=prod
+          else
+            environment=test
+          fi
+          # Pilot: test and prod are the same environment, so both use the
+          # Terraform folder deploy/terraform/environments/prod.
+          # TODO: when a separate test environment exists, add the folder
+          # "test" and use it here for pull request tags.
+          terraform_environment=prod
+          echo "environment=$environment" >> "$GITHUB_OUTPUT"
+          echo "terraform_environment=$terraform_environment" >> "$GITHUB_OUTPUT"
+          echo "Release of \`$IMAGE_TAG\` to **$environment**." >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Build and push image
+    needs: check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that the image repository is configured
+        run: |
+          if [ -z "$IMAGE_REPOSITORY" ]; then
+            echo "::error::The repository variable IMAGE_REPOSITORY is not set. See the TODOs in .github/workflows/release.yml."
+            exit 1
+          fi
+
+      - name: Check out the tag
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+
+      # TODO: log in to the container registry before the build step. The
+      # registry and its credentials are not known yet.
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TAG }}
+
+  deploy:
+    name: Deploy to ${{ needs.check.outputs.environment }}
+    needs: [check, build]
+    runs-on: ubuntu-latest
+    # A release to prod waits for approval if the GitHub environment "prod"
+    # has required reviewers.
+    environment: ${{ needs.check.outputs.environment }}
+    # One deployment to an environment at a time. A later run waits.
+    concurrency:
+      group: deploy-${{ needs.check.outputs.terraform_environment }}
+      cancel-in-progress: false
+    defaults:
+      run:
+        shell: bash
+        working-directory: deploy/terraform/environments/${{ needs.check.outputs.terraform_environment }}
+    steps:
+      # The chart and the Terraform code come from the tag, like the image.
+      - name: Check out the tag
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+
+      # TODO: authenticate to the cloud provider with the credentials of the
+      # environment.
+
+      # TODO: give Terraform access to the cluster of the environment
+      # (see providers.tf in the environment folder).
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      # TODO: this keeps the state between runs only after the remote backend
+      # is configured in versions.tf of the environment folder.
+      - name: Terraform init
+        run: terraform init -input=false
+
+      - name: Terraform apply
+        run: |
+          terraform apply -input=false -auto-approve \
+            -var "image_repository=$IMAGE_REPOSITORY" \
+            -var "image_tag=$IMAGE_TAG"
+
+  # The version that was deployed before is no longer in use. If it belongs to
+  # a closed pull request, its tag and image can go now.
+  cleanup:
+    name: Cleanup
+    needs: deploy
+    permissions:
+      contents: write
+      pull-requests: read
+    uses: ./.github/workflows/cleanup.yml

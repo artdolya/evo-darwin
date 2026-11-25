@@ -9,7 +9,7 @@ variable "image_repository" {
 }
 
 variable "image_tag" {
-  description = "Container image tag to deploy. The CD pipeline passes the Git commit SHA."
+  description = "Container image tag to deploy. The Release workflow passes the version tag, for example 0.0.1 or 0.0.1-PR2-003."
   type        = string
 
   validation {

@@ -4,6 +4,10 @@
 
 Accepted, 2026-11-24.
 
+Partly superseded by [0002](0002-versions-and-releases.md) on 2026-11-24: the list of environments in decision 4, and the order in which the pipeline deploys to them. The rest of this ADR stands.
+
+Partly superseded by [0003](0003-services-and-components.md) on 2026-11-24: the repository holds several services and not Darwin alone, and in decision 2 the Api no longer references Infrastructure. The rest of this ADR stands.
+
 ## Context
 
 This repository holds Darwin, a .NET 10 Web API service in the Evo project. It was created empty, and its structure had to be fixed before the first feature.

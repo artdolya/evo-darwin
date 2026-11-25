@@ -8,4 +8,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <!-- The Krapka libraries are referenced as source, through the link src/Krapka. See docs/adr/0004-krapka-as-source.md. -->
+  <PropertyGroup>
+    <KrapkaNetRoot>$(MSBuildThisFileDirectory)src\Krapka\src\Net\</KrapkaNetRoot>
+  </PropertyGroup>
+
 </Project>

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evo.Galaxy.Data\Evo.Galaxy.Data.csproj" />
+    <ProjectReference Include="..\Evo.Galaxy.Domain\Evo.Galaxy.Domain.csproj" />
+    <ProjectReference Include="..\Evo.Galaxy.Entities\Evo.Galaxy.Entities.csproj" />
+    <ProjectReference Include="..\Evo.Galaxy.Models\Evo.Galaxy.Models.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -13,7 +13,7 @@ env:
   TERRAFORM_VERSION: "1.15.6"
   # TODO: create the repository variable IMAGE_REPOSITORY with the image
   # repository without a tag (<registry>/<path>/evo-darwin). The registry is
-  # not chosen yet. cd.yml reads the same variable.
+  # not chosen yet. release.yml and cleanup.yml read the same variable.
   IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY }}
 
 jobs:
@@ -39,7 +39,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        environment: [dev, staging, prod]
+        # One entry for each folder in deploy/terraform/environments.
+        environment: [prod]
     defaults:
       run:
         working-directory: deploy/terraform/environments/${{ matrix.environment }}

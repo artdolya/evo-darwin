@@ -1,3 +1,8 @@
+# Pilot: this is the only environment. The Release workflow deploys both
+# pull request tags (test) and master tags (prod) here.
+# TODO: when a separate test environment exists, add the folder "test" next to
+# this one and use it in .github/workflows/release.yml for pull request tags.
+
 module "service" {
   source = "../../modules/service"
 

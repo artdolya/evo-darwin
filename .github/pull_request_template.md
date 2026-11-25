@@ -9,8 +9,5 @@
 ## Checklist
 
 - [ ] `dotnet build` and `dotnet test` pass locally.
-- [ ] The docs in `docs/` that describe this change are updated in this pull request (rules: `docs/README.md`).
-- [ ] The `README.md` of every project this change affects is updated. A new project has a `README.md`.
-- [ ] New or changed environment variables and secrets are listed in `docs/configuration.md` and in the README of the project that reads them.
+- [ ] The docs that this change affects are updated in this pull request, or this change affects no doc. Which docs to update: the table "If you change this, update that" in `CONTRIBUTING.md`.
 - [ ] `version` in `deploy/helm/evo-darwin/Chart.yaml` is bumped if the chart changed.
-- [ ] A decision that changes the structure of the repository or the service is recorded as an ADR in `docs/adr/`.

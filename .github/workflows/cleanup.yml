@@ -1,0 +1,90 @@
+name: Cleanup
+
+# Deletes the tags and the container images of pull requests that are closed,
+# merged or not. The rules are in docs/runbooks/deploy.md.
+#
+# A version that is deployed is kept, because the environment still pulls its
+# image. A later run deletes it, after another version replaced it. For that
+# reason release.yml starts this workflow after every deployment.
+
+on:
+  pull_request:
+    types: [closed]
+  workflow_call:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TERRAFORM_VERSION: "1.15.6"
+  IMAGE_REPOSITORY: ${{ vars.IMAGE_REPOSITORY }}
+
+jobs:
+  cleanup:
+    name: Delete tags and images of closed pull requests
+    # A pull request from a fork has no tags, and its token cannot delete any.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    concurrency:
+      group: cleanup
+      cancel-in-progress: false
+    steps:
+      # The script and the Terraform folders come from the default branch, not
+      # from the pull request.
+      - name: Check out the default branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      # TODO: authenticate to the cloud provider with credentials that can
+      # read the Terraform state of every environment.
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      # The Terraform state of an environment records the image tag that is
+      # deployed there.
+      # TODO: this reads the state only after the remote backend is configured
+      # in versions.tf of every environment folder. Until then no version
+      # counts as deployed.
+      - name: Read the deployed versions
+        id: deployed
+        run: |
+          deployed=""
+          for dir in deploy/terraform/environments/*/; do
+            terraform -chdir="$dir" init -input=false > /dev/null
+            deployed="$deployed $(terraform -chdir="$dir" output -raw image_tag)"
+          done
+          echo "tags=$deployed" >> "$GITHUB_OUTPUT"
+
+      - name: Delete the tags
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYED: ${{ steps.deployed.outputs.tags }}
+        run: |
+          open="$(gh pr list --state open --limit 1000 --json number --jq '.[].number')"
+          # shellcheck disable=SC2086
+          stale="$(git ls-remote --tags origin | bash scripts/tags.sh stale "$DEPLOYED" $open)"
+          if [ -z "$stale" ]; then
+            echo "No tag to delete." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          for tag in $stale; do
+            # TODO: delete the image "$IMAGE_REPOSITORY:$tag" from the container
+            # registry here, before the tag is deleted. The command depends on
+            # the registry, which is not chosen yet. Do not fail when the image
+            # does not exist: only a tag that was released has an image.
+            git push origin ":refs/tags/$tag"
+            echo "Deleted tag \`$tag\`." >> "$GITHUB_STEP_SUMMARY"
+          done
+          # Remove this warning together with the TODO above.
+          echo "::warning::Tags were deleted, but their images were not: $(echo $stale). See the TODO in .github/workflows/cleanup.yml."

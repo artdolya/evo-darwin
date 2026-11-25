@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evo.Galaxy.Domain\Evo.Galaxy.Domain.csproj" />
+    <ProjectReference Include="..\Evo.Galaxy.Infrastructure\Evo.Galaxy.Infrastructure.csproj" />
+    <ProjectReference Include="..\Evo.Galaxy.Models\Evo.Galaxy.Models.csproj" />
+  </ItemGroup>
+
+</Project>
