@@ -48,7 +48,9 @@ To listen on another port, add `--urls`:
 dotnet run --project src/Galaxy/Evo.Galaxy.Api --urls http://localhost:5091
 ```
 
-`Evo.Galaxy.Api` is not built into a container image and is not deployed. See the [architecture overview](../../../docs/architecture/overview.md#deployment).
+`Evo.Galaxy.Api` is not deployed. See the [architecture overview](../../../docs/architecture/overview.md#deployment).
+
+The [local stack](../../Docker/README.md) builds an image of the Api from the `Dockerfile` in this folder, and runs it in a container. The Api then listens on <http://localhost:5181>.
 
 ## Tests
 

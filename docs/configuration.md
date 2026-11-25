@@ -2,7 +2,7 @@
 
 Every environment variable and secret of the components and of the pipeline. Add a row in the same pull request that adds or changes a variable, and update the "Environment variables" section in the README of the project that reads it.
 
-Only `Evo.Darwin.Api` is deployed. The sections [Service](#service), [Secrets](#secrets), [Terraform](#terraform) and [Helm chart](#helm-chart) describe it. The variables of the components that are not deployed are in [Other components](#other-components).
+Only `Evo.Darwin.Api` is deployed. The sections [Service](#service), [Secrets](#secrets), [Terraform](#terraform) and [Helm chart](#helm-chart) describe it. The variables of the components that are not deployed are in [Other components](#other-components). The values that the Docker Compose project sets for local development are in [Local stack](#local-stack).
 
 ## How the service reads configuration
 
@@ -25,7 +25,7 @@ The variables of `Evo.Darwin.Api`.
 
 ## Other components
 
-These components run locally and are not deployed, so a value comes from the launch profile of the project or from the shell.
+These components run locally and are not deployed, so a value comes from the launch profile of the project or from the shell. In the [local stack](#local-stack), the value comes from `docker-compose.yml`.
 
 | Component | Name | Meaning | Required | Default |
 | --- | --- | --- | --- | --- |
@@ -40,6 +40,28 @@ These components run locally and are not deployed, so a value comes from the lau
 A connection string holds a password. When a Migrations program or a Worker is deployed, its connection string is a secret: see [Secrets](#secrets).
 
 TODO: add the settings of Redis and RabbitMQ when their clients are added to the APIs and the Workers.
+
+## Local stack
+
+The Docker Compose project in `src/Docker/` starts the APIs, the Workers and the home site, with PostgreSQL, Redis and RabbitMQ: see [src/Docker/README.md](../src/Docker/README.md). Its file `docker-compose.yml` sets the variables below. Each one has a default value in that file, so the stack starts with no setup. The defaults are committed and are for a local machine only. Do not use them in a deployed environment.
+
+| Container | Name | Meaning | Default |
+| --- | --- | --- | --- |
+| `evo.darwin.api`, `evo.galaxy.api` | `ASPNETCORE_ENVIRONMENT` | See [Service](#service). | `Development` |
+| `evo.darwin.api`, `evo.galaxy.api` | `ASPNETCORE_HTTP_PORTS` | See [Service](#service). The port mapping of the container uses the same port. | `8080` |
+| `evo.darwin.worker`, `evo.galaxy.worker` | `DOTNET_ENVIRONMENT` | See [Other components](#other-components). | `Development` |
+| `postgres` | `POSTGRES_USER` | Name of the superuser that PostgreSQL creates with its data volume. | `postgres` |
+| `postgres` | `POSTGRES_PASSWORD` | Password of that user. PostgreSQL sets it only when it creates the data volume. | `postgres` |
+| `rabbitmq` | `RABBITMQ_DEFAULT_USER` | Name of the user that RabbitMQ creates at its first start. Also the user of the management UI. | `evo` |
+| `rabbitmq` | `RABBITMQ_DEFAULT_PASS` | Password of that user. | `evo` |
+
+Redis runs with no password.
+
+The APIs and the Workers read no setting of PostgreSQL, Redis or RabbitMQ today, so the stack sets none for them.
+
+A developer changes a value for one machine in `src/Docker/docker-compose.override.yml`. Git ignores that file: see [Your own values](../src/Docker/README.md#your-own-values).
+
+The Migrations programs are not in the stack. A developer runs them from the command line and gives the connection string in the shell. The PostgreSQL of the stack listens on port 5532 of the host, so the connection string of the Darwin database is `Host=localhost;Port=5532;Database=darwin;Username=postgres;Password=postgres` with the default values. For Galaxy, replace `darwin` with `galaxy`. See [Apply the migrations](../src/Docker/README.md#apply-the-migrations).
 
 ## Secrets
 

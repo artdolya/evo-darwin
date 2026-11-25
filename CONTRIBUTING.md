@@ -85,6 +85,8 @@ make format
 
 Do not run `dotnet format` without `--exclude src/Krapka`. It changes the files of the Krapka checkout, which belong to another repository.
 
+The `Makefile` has two more targets, `make up` and `make down`. They start and stop the complete stack in Docker, and they check nothing. See [README.md](README.md#run-the-complete-stack).
+
 The formatting rules for C# are in `.editorconfig`. The CI check covers the C# files of the solution, except the Krapka files: indentation and other whitespace, line endings, and the order of `using` directives. It does not cover:
 
 - A rule with the severity `suggestion` or `silent`, such as file-scoped namespaces. Editors show these rules. Reviewers check them.
@@ -245,7 +247,8 @@ Before you open a pull request, find the docs your change affects in the table b
 | If you change | Update |
 | --- | --- |
 | An endpoint, or a request or response type in a Contracts project | [docs/api/](docs/api/README.md), and the endpoint table in the README of the Api project |
-| An environment variable or a secret: you add, remove or rename it, or change its default | [docs/configuration.md](docs/configuration.md), and the "Environment variables" section in the README of the project that reads it |
+| An environment variable or a secret: you add, remove or rename it, or change its default | [docs/configuration.md](docs/configuration.md), and the "Environment variables" section in the README of the project that reads it. Also `src/Docker/docker-compose.yml`, if a component needs the variable to run in the local stack. |
+| The local stack in `src/Docker/`: a container, a port, a variable or its default value, or a Dockerfile that the stack builds | [src/Docker/README.md](src/Docker/README.md), and "Local stack" in [docs/configuration.md](docs/configuration.md) |
 | A workflow in `.github/workflows/`, a script in `scripts/`, the Dockerfile, the Helm chart or the Terraform code | [docs/runbooks/deploy.md](docs/runbooks/deploy.md) and [docs/runbooks/rollback.md](docs/runbooks/rollback.md). Also [docs/configuration.md](docs/configuration.md) if a pipeline variable, a Terraform variable or a value of an environment changes, and [Checks](#checks) in this file if a workflow runs something else. |
 | An alert: you add one | A new runbook, copied from [docs/runbooks/template.md](docs/runbooks/template.md) |
 | A dependency (an external service, the message bus), a data store, or the project layout (a new project, a changed project reference) | [docs/architecture/overview.md](docs/architecture/overview.md). For a new project also its `README.md`. |
@@ -330,7 +333,7 @@ The image in the repository is rendered with the Ubuntu font. The script uses De
 
 ### Project READMEs
 
-Every .NET project in `src/` and `tests/` has a `README.md` in its folder. A new project gets its README in the pull request that adds it. A component that is not built yet (`Evo.Darwin.Ui`, `Evo.Galaxy.Ui`, `Evo.Home.Site`) has a short README that says what the component is and what is not decided. The README of a .NET project has these headings:
+Every .NET project in `src/` and `tests/` has a `README.md` in its folder. A new project gets its README in the pull request that adds it. A component that is not built yet (`Evo.Darwin.Ui`, `Evo.Galaxy.Ui`) has a short README that says what the component is and what is not decided. The README of `Evo.Home.Site`, which is not a .NET project, lists its files and says how to view the site. The README of `src/Docker`, the Docker Compose project, lists its files and says how to start the local stack. The README of a .NET project has these headings:
 
 1. **What belongs here**: what the project is for, and what must go into another project instead.
 2. **References**: the projects it references.

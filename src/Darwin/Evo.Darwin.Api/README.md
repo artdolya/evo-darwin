@@ -48,7 +48,9 @@ To listen on another port, add `--urls`:
 dotnet run --project src/Darwin/Evo.Darwin.Api --urls http://localhost:5090
 ```
 
-To run it in a container, see the [repository README](../../../README.md#run-in-a-container).
+To run it in a container, see the [repository README](../../../README.md#run-in-a-container). That image is the one that is deployed. It is built from `deploy/docker/Dockerfile`.
+
+The [local stack](../../Docker/README.md) builds its own image of the Api from the `Dockerfile` in this folder, and runs it in a container. The Api then listens on <http://localhost:5180>.
 
 ## Tests
 

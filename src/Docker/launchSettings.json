@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "evo.darwin.api": "StartDebugging",
+        "evo.darwin.worker": "StartDebugging",
+        "evo.galaxy.api": "StartDebugging",
+        "evo.galaxy.worker": "StartDebugging",
+        "evo.home.site": "StartWithoutDebugging",
+        "postgres": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging"
+      }
+    }
+  }
+}

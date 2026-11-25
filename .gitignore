@@ -17,6 +17,8 @@ coverage*.xml
 .env
 .env.*
 appsettings.*.local.json
+# The values of one developer for the local stack. See src/Docker/README.md.
+docker-compose.override.yml
 
 # Terraform (the .terraform.lock.hcl files are committed)
 .terraform/

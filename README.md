@@ -8,7 +8,7 @@ The repository of the Evo project. It holds the services of Evo, built with .NET
 | Galaxy | The administration of Evo. | UI, API, Worker, Migrations |
 | Home | The home site of Evo: a few static pages. | Site |
 
-The repository is a skeleton today: each API has a health endpoint and no business features, each Worker starts and waits, and no migration exists. The UIs and the home site are not built yet. What each component does and what it may reach is in [docs/architecture/overview.md](docs/architecture/overview.md).
+The repository is a skeleton today: each API has a health endpoint and no business features, each Worker starts and waits, and no migration exists. The UIs are not built yet. The home site has one static page. What each component does and what it may reach is in [docs/architecture/overview.md](docs/architecture/overview.md).
 
 - **Project:** Evo
 - **Services:** Darwin, Galaxy, Home
@@ -20,9 +20,9 @@ TODO: name the owning team and how to reach it, and set the team in [.github/COD
 
 - [.NET SDK](https://dotnet.microsoft.com/download) 10.0.115 or a later 10.0 version. `global.json` selects it. Check with `dotnet --version`.
 - A checkout of [Krapka](https://github.com/artdolya/krapka) in the folder next to this repository, named `krapka`. See [Krapka](#krapka).
-- Docker, only if you build or run the container image, or run the [local database](#local-database).
+- Docker, only if you run the [complete stack](#run-the-complete-stack), build or run the container image, or run the [local database](#local-database).
 - Terraform 1.15 and Helm, only if you change files in `deploy/`.
-- Make, only if you run `make format`. It formats the C# code and the Terraform code, so it needs Terraform too.
+- Make, only if you use the shortcut commands of the `Makefile`: `make up` and `make down` for the [complete stack](#run-the-complete-stack), and `make format`. `make format` formats the C# code and the Terraform code, so it needs Terraform too.
 
 The APIs and the Workers need no database or other running dependency today. Only the Migrations programs need the [local database](#local-database).
 
@@ -79,7 +79,37 @@ Six projects run. Each has the command and the expected result in its README:
 | [Evo.Galaxy.Worker](src/Galaxy/Evo.Galaxy.Worker/README.md) | The worker of Galaxy. | None |
 | [Evo.Galaxy.Migrations](src/Galaxy/Evo.Galaxy.Migrations/README.md) | Applies the migrations of the Galaxy database, then exits. | None |
 
+## Run the complete stack
+
+One Docker Compose project starts the APIs, the Workers and the home site, and PostgreSQL, Redis and RabbitMQ with them. Every variable and secret has a default value, so it needs no setup:
+
+```bash
+make up
+```
+
+The command builds the images and starts the stack in the background. The first start takes some minutes. The API of Darwin then listens on <http://localhost:5180>, and the API of Galaxy on <http://localhost:5181>. Check one:
+
+```bash
+curl http://localhost:5180/health
+```
+
+The response is `Healthy`. Stop the stack:
+
+```bash
+make down
+```
+
+Without Make, run the commands of the two targets yourself: `docker compose --project-directory src/Docker up --build --detach` and `docker compose --project-directory src/Docker down`.
+
+In Visual Studio, the same stack is the project `docker-compose` with the launch profile `Docker Compose`. It starts the APIs and the Workers with the debugger.
+
+The stack does not run the Migrations programs. Run them from the command line against the PostgreSQL of the stack, which listens on port 5532: see [Apply the migrations](src/Docker/README.md#apply-the-migrations).
+
+The other addresses, the start from Visual Studio, and the file for the values of your own machine are in [src/Docker/README.md](src/Docker/README.md).
+
 ## Local database
+
+The complete stack has its own PostgreSQL, on port 5532. This section is for a run of a Migrations program without the stack.
 
 The Migrations programs need a PostgreSQL server. Start one in Docker. It listens on port 5432, and its data is deleted when the container stops:
 
@@ -115,7 +145,7 @@ This runs the unit tests and the integration tests of Darwin and of Galaxy. The 
 
 ## Run in a container
 
-Only `Evo.Darwin.Api` has a container image. The other components are not built into images yet.
+Only `Evo.Darwin.Api` has a container image that is deployed. The images of the other components are built only for the [complete stack](#run-the-complete-stack).
 
 ```bash
 docker build -f deploy/docker/Dockerfile -t evo-darwin:local .
@@ -133,15 +163,16 @@ The container listens on port 8080: `curl http://localhost:8080/health`. It runs
 | --- | --- |
 | `src/` | The services: one folder for each service (`Darwin`, `Galaxy`, `Home`), and in it one folder for each project, named `Evo.<Service>.<Component>`. Each project and what it may reference: [docs/architecture/overview.md](docs/architecture/overview.md). |
 | `src/Krapka` | A symbolic link to the Krapka checkout next to this repository. See [Krapka](#krapka). |
+| `src/Docker/` | The Docker Compose project of the [complete stack](#run-the-complete-stack) for local development. See [src/Docker/README.md](src/Docker/README.md). |
 | `tests/` | The unit tests and the integration tests, in one folder for each service: `Darwin` and `Galaxy`. |
-| `Evo.sln` | The solution. Its folders are the same as on disk: `src/Darwin`, `src/Galaxy`, `tests/Darwin`, `tests/Galaxy`, and `Krapka` for the Krapka projects. |
-| `deploy/docker/` | Dockerfile of the container image of `Evo.Darwin.Api`. |
+| `Evo.sln` | The solution. Its folders are the same as on disk: `src/Darwin`, `src/Galaxy`, `tests/Darwin`, `tests/Galaxy`, and `Krapka` for the Krapka projects. The project `docker-compose` of `src/Docker/` is in the folder `src`. |
+| `deploy/docker/` | Dockerfile of the container image of `Evo.Darwin.Api` that is deployed. |
 | `deploy/helm/evo-darwin/` | Helm chart of `Evo.Darwin.Api`. |
 | `deploy/terraform/` | Terraform that installs the chart: one shared module and one folder per environment. |
 | `docs/` | Documentation. |
 | `scripts/` | Helper scripts. `tags.sh` computes the version tags for the workflows. |
 | `.github/` | Workflows (CI, Terraform plan, tag, release, cleanup), code owners, pull request template. |
-| `Makefile` | Shortcut commands. `make format` formats the C# code and the Terraform code. |
+| `Makefile` | Shortcut commands. `make up` starts the [complete stack](#run-the-complete-stack) and `make down` stops it. `make format` formats the C# code and the Terraform code. |
 | `dotnet-tools.json` | The .NET tools of the repository: `dotnet ef`, which creates migrations. `dotnet tool restore` installs them. |
 | `.editorconfig` | Formatting and code style rules, read by editors and by `dotnet format`. |
 

@@ -2,7 +2,7 @@
 
 How a version of the service is tagged, released and deployed. A deployment is started by hand. Nothing is deployed when a pull request is merged.
 
-A release builds and deploys `Evo.Darwin.Api` only. The other components of the repository have no container image and are not deployed: see the [architecture overview](../architecture/overview.md#deployment).
+A release builds and deploys `Evo.Darwin.Api` only. A release builds no image of the other components of the repository, and they are not deployed: see the [architecture overview](../architecture/overview.md#deployment).
 
 | Workflow | File | What it does |
 | --- | --- | --- |

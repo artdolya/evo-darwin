@@ -1,0 +1,39 @@
+# The values of your own machine for the local stack.
+#
+# Copy this file to docker-compose.override.yml, in the same folder, and change the copy.
+# Git ignores the copy. Do not put your own values in this file or in docker-compose.yml.
+#
+# Docker Compose and Visual Studio read docker-compose.override.yml after
+# docker-compose.yml. A value in the copy replaces the value of the same key. Name only
+# the keys that you change.
+#
+# Every line below is an example. Remove the "# " at the start of the lines that you
+# need, and of the line "services:". Keep the indentation.
+
+# services:
+
+#   # Another variable of one component.
+#   evo.darwin.api:
+#     environment:
+#       Logging__LogLevel__Default: Debug
+
+#   # Another host port. "!override" replaces the list of ports. Without it, Compose adds
+#   # the port to the list of docker-compose.yml.
+#   evo.galaxy.api:
+#     ports: !override
+#       - "5191:8080"
+
+#   # Another password of PostgreSQL. Use the same password in the connection string that
+#   # you give to a Migrations program.
+#   # PostgreSQL sets the password only when it creates the data volume. If the volume
+#   # exists, delete it first:
+#   #   docker compose --project-directory src/Docker down --volumes
+#   postgres:
+#     environment:
+#       POSTGRES_PASSWORD: my-password
+
+#   # Another user and password of RabbitMQ.
+#   rabbitmq:
+#     environment:
+#       RABBITMQ_DEFAULT_USER: my-user
+#       RABBITMQ_DEFAULT_PASS: my-password

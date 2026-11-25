@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>60cca1ec-81dd-4dc8-96bc-aa6e3247fb1c</ProjectGuid>
+    <!-- The same name as in docker-compose.yml. Visual Studio and `docker compose` then use the same containers and the same data volume. -->
+    <DockerComposeProjectName>evo</DockerComposeProjectName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="docker-compose.yml" />
+    <!-- The values of one developer. Git ignores the file, so it is absent in a new checkout. -->
+    <None Include="docker-compose.override.yml" Condition="Exists('docker-compose.override.yml')">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.override.example.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="postgres\init-databases.sql" />
+    <None Include="README.md" />
+  </ItemGroup>
+</Project>

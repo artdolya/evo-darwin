@@ -57,6 +57,8 @@ dotnet ef migrations list --project src/Darwin/Evo.Darwin.Migrations
 
 The program is not built into a container image and is not run by the pipeline. See the [architecture overview](../../../docs/architecture/overview.md#deployment).
 
+The [local stack](../../Docker/README.md) does not run the program either. To apply the migrations to the PostgreSQL of the stack, run the command above with `Port=5532` in the connection string: see [Apply the migrations](../../Docker/README.md#apply-the-migrations).
+
 ## Tests
 
 No tests cover this project today.

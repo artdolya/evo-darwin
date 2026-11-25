@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <title>Evolution</title>
+    <defs>
+        <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#161e44"/>
+            <stop offset="1" stop-color="#06091a"/>
+        </linearGradient>
+    </defs>
+    <rect width="64" height="64" rx="14" fill="url(#tile)"/>
+    <circle cx="30.5" cy="42.8" r="2.1" fill="#ffffff"/>
+    <circle cx="26" cy="47.1" r="2.6" fill="#22d3ee"/>
+    <circle cx="18.4" cy="46.2" r="3.2" fill="#3cd7c9"/>
+    <circle cx="13.1" cy="38.2" r="4.1" fill="#56dba4"/>
+    <circle cx="16.5" cy="26.6" r="5.1" fill="#6fde7f"/>
+    <circle cx="30.3" cy="20.7" r="6.3" fill="#89e25a"/>
+    <circle cx="47.1" cy="29.1" r="7.9" fill="#a3e635"/>
+</svg>

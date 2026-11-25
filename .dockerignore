@@ -1,8 +1,10 @@
-# The image is built from the repository root (see deploy/docker/Dockerfile).
+# Every image is built from the repository root: deploy/docker/Dockerfile, and the
+# Dockerfiles that src/Docker/docker-compose.yml names.
 # Only global.json, Directory.*.props and src/ are needed in the build context.
 **/bin/
 **/obj/
-# A link to a checkout outside the build context. The image of Evo.Darwin.Api does not need it.
+# A link to a checkout outside the build context. An image that needs the Krapka sources
+# gets them as a second build context: see src/Docker/docker-compose.yml.
 src/Krapka
 .git/
 .github/

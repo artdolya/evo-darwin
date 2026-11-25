@@ -13,6 +13,7 @@ Documentation of the Evo services in this repository: Darwin, Galaxy and the hom
 | [dream-context.md](dream-context.md) | What is DreamContext, which parts and scores does it have, when is a point confirmed, and how does a confirmed point become a test? |
 | [roles/README.md](roles/README.md) | Which roles exist, when is each one engaged, which architect role decides what, and what is a specialization of a role? |
 | [api/README.md](api/README.md) | How is the OpenAPI document generated and where do I get it? |
+| [../src/Docker/README.md](../src/Docker/README.md) | How do I run the complete stack in Docker, from Visual Studio or from the command line, and where do the values of my own machine go? |
 | [configuration.md](configuration.md) | Which environment variables and secrets exist, and where does each value come from? |
 | [runbooks/deploy.md](runbooks/deploy.md) | How is a version tagged, released and deployed? |
 | [runbooks/rollback.md](runbooks/rollback.md) | How do I return an environment to the previous version? |
@@ -54,7 +55,7 @@ Every project has its own README. It says what the project is for, how to run it
 | Unit tests. | [Evo.Darwin.UnitTests](../tests/Darwin/Evo.Darwin.UnitTests/README.md) | [Evo.Galaxy.UnitTests](../tests/Galaxy/Evo.Galaxy.UnitTests/README.md) |
 | Tests that call the API over HTTP. | [Evo.Darwin.IntegrationTests](../tests/Darwin/Evo.Darwin.IntegrationTests/README.md) | [Evo.Galaxy.IntegrationTests](../tests/Galaxy/Evo.Galaxy.IntegrationTests/README.md) |
 
-The home site has one folder: [Evo.Home.Site](../src/Home/Evo.Home.Site/README.md). It is not built yet.
+The home site has one folder: [Evo.Home.Site](../src/Home/Evo.Home.Site/README.md). It holds one static page.
 
 ## Writing and updating docs
 

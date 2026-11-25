@@ -108,6 +108,8 @@ All components of a service share its prefix, for example `Evo.Darwin.`. New com
 
 The projects of a service are in one folder, named after the service: `src/Darwin/`, `src/Galaxy/` and `src/Home/`. The test projects are in `tests/Darwin/` and `tests/Galaxy/`. `Evo.sln` has the same folders.
 
+The folder `src/Docker/` is not a service. It holds the Docker Compose project that runs the APIs, the Workers and the home site on one machine: see [Deployment](#deployment). In `Evo.sln` it is the project `docker-compose`, in the folder `src`.
+
 The Krapka projects keep the names they have in their own repository: `KrapkaNet.<Area>.<Name>`.
 
 `evo-darwin` is the kebab-case form of `<project>-<service>`. It names the Helm chart, the chart folder, the Kubernetes namespace and the Kubernetes resources of Darwin.
@@ -161,7 +163,8 @@ The code that exists today, in each of the two services:
 - Migrations applies the pending migrations. No migration exists.
 - Data has a context with no tables.
 - The other projects are empty class libraries with the references above.
-- The UI folders and `Evo.Home.Site` hold only a README.
+- The UI folders hold only a README.
+- `Evo.Home.Site` holds one static page, its icon and its background. No pipeline deploys it.
 
 ## Rules
 
@@ -208,9 +211,11 @@ The reasons, and the plan to move to NuGet packages later, are recorded in [ADR 
 
 ## Deployment
 
-Only `Evo.Darwin.Api` is built into a container image and deployed. The Dockerfile in `deploy/docker/`, the Helm chart `evo-darwin` and the Terraform code deploy it alone. It runs in Kubernetes, in the namespace `evo-darwin`, and listens on port 8080. The Kubernetes probes call `GET /health`. See [the deploy runbook](../runbooks/deploy.md).
+Only `Evo.Darwin.Api` is deployed. The Dockerfile in `deploy/docker/`, the Helm chart `evo-darwin` and the Terraform code deploy it alone. It runs in Kubernetes, in the namespace `evo-darwin`, and listens on port 8080. The Kubernetes probes call `GET /health`. See [the deploy runbook](../runbooks/deploy.md).
 
-TODO: build and deploy `Evo.Darwin.Worker`, and run `Evo.Darwin.Migrations` before a new version starts. Their images need the Krapka sources, which are outside the Docker build context of this repository.
+For local development, the Docker Compose project in `src/Docker/` builds an image of each API and of each Worker, and runs them with the home site, PostgreSQL, Redis and RabbitMQ on one machine. No pipeline builds these images, and they are not deployed. The Migrations programs have no image. A developer runs them from the command line against the PostgreSQL of the stack. See [src/Docker/README.md](../../src/Docker/README.md).
+
+TODO: build and deploy `Evo.Darwin.Worker`, and run `Evo.Darwin.Migrations` before a new version starts. Their images need the Krapka sources, which are outside the Docker build context of this repository. The images of the local stack get the Krapka checkout as a second build context.
 
 TODO: build and deploy the Galaxy components, the two UIs and the home site.
 

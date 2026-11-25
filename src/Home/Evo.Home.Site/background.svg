@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <defs>
+        <radialGradient id="space" cx="50%" cy="46%" r="75%">
+            <stop offset="0" stop-color="#1a2352"/>
+            <stop offset="0.55" stop-color="#0b1026"/>
+            <stop offset="1" stop-color="#04060f"/>
+        </radialGradient>
+    </defs>
+    <!-- The gradient is stretched to the whole page. -->
+    <rect width="100%" height="100%" fill="url(#space)"/>
+    <!-- The mark of favicon.svg. It keeps its shape and stays whole at any page size. -->
+    <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+        <g opacity="0.3">
+            <circle cx="47.5" cy="67.9" r="3.4" fill="#ffffff"/>
+            <circle cx="40.1" cy="74.9" r="4.3" fill="#22d3ee"/>
+            <circle cx="27.5" cy="73.4" r="5.4" fill="#3cd7c9"/>
+            <circle cx="18.7" cy="60.2" r="6.7" fill="#56dba4"/>
+            <circle cx="24.4" cy="41.1" r="8.4" fill="#6fde7f"/>
+            <circle cx="47.2" cy="31.3" r="10.5" fill="#89e25a"/>
+            <circle cx="74.9" cy="45.2" r="13.1" fill="#a3e635"/>
+        </g>
+    </svg>
+</svg>

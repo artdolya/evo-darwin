@@ -37,7 +37,9 @@ info: Microsoft.Hosting.Lifetime[0]
 
 Stop it with Ctrl+C. The Worker needs no RabbitMQ, database or other running dependency today.
 
-The Worker is not built into a container image and is not deployed. See the [architecture overview](../../../docs/architecture/overview.md#deployment).
+The Worker is not deployed. See the [architecture overview](../../../docs/architecture/overview.md#deployment).
+
+The [local stack](../../Docker/README.md) builds an image of the Worker from the `Dockerfile` in this folder, and runs it in a container with PostgreSQL, Redis and RabbitMQ.
 
 ## Tests
 
